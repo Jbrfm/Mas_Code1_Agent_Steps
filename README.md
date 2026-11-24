@@ -1,5 +1,45 @@
 # تمرین اتصال پایتون به Groq API
 
+## اجرای نسخهٔ MCP
+
+مطابق اسلایدهای ۱۵ تا ۱۷، ابزارها به سرور جدا منتقل شده‌اند:
+
+`Agent → MultiServerMCPClient → stdio → FastMCP → add / get_weather`
+
+منطق ابزارها در `tools.py`، ثبت ابزارهای MCP در `mcp_server.py` و اتصال عامل در `main.py` قرار دارد.
+برای سازگاری با اسلایدها از `mcp<2` و `langchain-mcp-adapters` استفاده می‌شود.
+منابع: [MCP SDK v1](https://py.sdk.modelcontextprotocol.io/v1/) و [LangChain MCP Adapters](https://github.com/langchain-ai/langchain-mcp-adapters).
+
+نصب وابستگی‌های جدید:
+
+```powershell
+uv sync --python 3.12
+# یا
+.\.venv\Scripts\python.exe -m pip install -e .
+```
+
+آزمون کشف و اجرای ابزارها از طریق MCP، بدون کلید API:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+اجرای عامل با کلید Groq در `.env`:
+
+```powershell
+.\.venv\Scripts\python.exe -m basic_agent.main
+```
+
+عامل سرور را خودکار با همان مفسر پایتون اجرا می‌کند و ابتدا نام ابزارهای دریافت‌شده را چاپ می‌کند.
+برای اجرای مستقل سرور مطابق اسلاید ۱۵:
+
+```powershell
+.\.venv\Scripts\python.exe -m basic_agent.mcp_server
+```
+
+سرور منتظر پیام‌های پروتکل روی stdin می‌ماند؛ برای پایان `Ctrl+C` بزنید.
+سرور به کلید Groq نیاز ندارد و `.env` را بارگذاری نمی‌کند. آب‌وهوا همچنان آزمایشی است.
+
 این پروژه با LangChain یک مدل زبانی را به دو ابزار `add` و `get_weather` متصل می‌کند.
 ابزار جمع محاسبه واقعی انجام می‌دهد؛ آب‌وهوا داده آزمایشی است و به سرویس هواشناسی وصل نیست.
 

@@ -7,12 +7,15 @@ requires-python = ">=3.12"
 dependencies = [
     "langchain>=1.4.8",
     "langchain-openai>=1.7.3",
+    "langchain-mcp-adapters>=0.2.1,<0.3",
+    "mcp>=1.28,<2",
     "langgraph>=1.2.19",
     "python-dotenv>=1.2.4",
 ]
 
 [project.scripts]
 basic-agent = "basic_agent.main:main"
+basic-agent-mcp-server = "basic_agent.mcp_server:main"
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
