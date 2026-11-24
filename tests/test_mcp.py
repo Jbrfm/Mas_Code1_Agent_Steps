@@ -1,6 +1,7 @@
 """Integration checks against a real MCP subprocess; no API key required."""
 
 import unittest
+import json
 
 from basic_agent.main import create_mcp_client
 
@@ -11,7 +12,7 @@ class MCPToolsTest(unittest.IsolatedAsyncioTestCase):
         async with client.session("basic") as session:
             listing = await session.list_tools()
             schemas = {tool.name: tool.inputSchema for tool in listing.tools}
-            self.assertEqual(set(schemas), {"add", "get_weather"})
+            self.assertEqual(set(schemas), {"add", "get_weather", "analyze_text", "analyze_csv"})
             self.assertEqual(schemas["add"]["properties"]["a"]["type"], "integer")
             self.assertEqual(schemas["get_weather"]["required"], ["city"])
             for name, args, expected in [
@@ -26,6 +27,14 @@ class MCPToolsTest(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(result.content[0].text, expected)
             invalid = await session.call_tool("add", {"a": "invalid", "b": 1})
             self.assertTrue(invalid.isError)
+            text = await session.call_tool("analyze_text", {"text": "Hello MCP! Hello."})
+            self.assertFalse(text.isError)
+            self.assertEqual(json.loads(text.content[0].text)["word_count"], 3)
+            csv = await session.call_tool("analyze_csv", {"csv_text": "score\n18\n20\n16"})
+            self.assertFalse(csv.isError)
+            self.assertEqual(json.loads(csv.content[0].text)["columns"]["score"]["mean"], 18)
+            malformed = await session.call_tool("analyze_csv", {"csv_text": "a,b\n1"})
+            self.assertTrue(malformed.isError)
 
         tools = {tool.name: tool for tool in await client.get_tools()}
         result = await tools["add"].ainvoke({"a": 47832, "b": 91347})

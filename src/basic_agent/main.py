@@ -44,7 +44,12 @@ async def run_agent() -> None:
     result = await agent.ainvoke(
         {
             "messages": [
-                ("user", "Use the add tool for 47832 + 91347, and get_weather for Paris.")
+                (
+                    "user",
+                    "Use add for 47832 + 91347 and get_weather for Paris. "
+                    "Also use analyze_text on 'Hello world! Hello MCP.' and "
+                    "analyze_csv on this data:\nname,score\nAli,18\nSara,20\nReza,16",
+                )
             ]
         },
         config={"recursion_limit": 10},
